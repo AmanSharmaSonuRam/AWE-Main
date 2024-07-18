@@ -28,4 +28,4 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/AWE-Main.git
+   git clone https://github.com/AmanVatsSharma/AWE-Main/

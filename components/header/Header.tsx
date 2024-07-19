@@ -29,29 +29,63 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import MenuIcon from "@mui/icons-material/Menu";
+import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
+import { AccountsDrawer, Drawer } from "./MobileHeader";
 
 type Props = {};
 
 const Header = (props: Props) => {
   return (
     <div className="w-full justify-center items-center p3 fixed shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] ">
-      {/* announcement BAr  */}
-      <div className="announcementBar bg-primary text-white">Announcement Bar
 
+
+      {/* announcement BAr  */}
+
+      <div className="announcementBar bg-primary text-white text-center p-2">
+        Announcement Bar
       </div>
       <div className="mainHeader flex flex-col md:flex-row items-center justify-between px-3 md:px-6 gap-2 py-2">
-        {/* Logo  */}
-        <div className="logo flex justify-center items-center text-6xl font-bold text-gray-600">
-         Logo
+
+
+        {/* Logo for Desktop */}
+        <div className="logo hidden md:flex justify-center items-center text-6xl font-bold text-gray-600">
+          Logo
         </div>
+
+        {/* mobile veiw & navigation drawer   */}
+
+        <div className="mobileDrawer flex md:hidden items-center justify-center relative w-full">
+
+          <AccountsDrawer />
+          <Drawer />
+
+          <div className="logo flex justify-center items-center text-6xl font-bold text-gray-600">
+            Logo
+          </div>
+
+        </div>
+
+
         {/* search-Bar  */}
+
         <div className="flex w-full max-w-lg items-center space-x-2">
           <Input type="search" placeholder="Seearch..." />
           <Button type="submit">Search</Button>
         </div>
 
         {/* Accounts-section  */}
+
         <div className="accountsSection gap-2 hidden md:flex">
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">My Account</Button>
@@ -107,13 +141,17 @@ const Header = (props: Props) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
-              <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-            <AvatarFallback>CN</AvatarFallback>
-          </Avatar>
+                <Avatar>
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56">
@@ -167,11 +205,16 @@ const Header = (props: Props) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          
+
         </div>
+
       </div>
+
       <div className="bottomNavbar bg-primary items-center md:flex justify-center w-full hidden ">
+
+
         {/* Bottom- NavBar  */}
+
         <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
@@ -195,6 +238,8 @@ const Header = (props: Props) => {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
+
+
     </div>
   );
 };

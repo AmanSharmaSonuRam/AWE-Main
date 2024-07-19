@@ -39,15 +39,10 @@ const Header = (props: Props) => {
       <div className="announcementBar bg-primary text-white">Announcement Bar
 
       </div>
-      <div className="mainHeader flex flex-col md:flex-row items-center justify-between px-3 md:px-6 gap-2">
+      <div className="mainHeader flex flex-col md:flex-row items-center justify-between px-3 md:px-6 gap-2 py-2">
         {/* Logo  */}
-        <div className="logo flex justify-center items-center">
-          <img
-            src="https://i.pinimg.com/280x280_RS/f1/47/f0/f147f04ba4d44cc0eb0a852579efd714.jpg"
-            alt="AWE"
-            width={90}
-            height={90}
-          />
+        <div className="logo flex justify-center items-center text-6xl font-bold text-gray-600">
+         Logo
         </div>
         {/* search-Bar  */}
         <div className="flex w-full max-w-lg items-center space-x-2">
@@ -175,7 +170,7 @@ const Header = (props: Props) => {
           
         </div>
       </div>
-      <div className="bottomNavbar absolute -bottom-5 items-center md:flex justify-center w-full hidden ">
+      <div className="bottomNavbar bg-primary items-center md:flex justify-center w-full hidden ">
         {/* Bottom- NavBar  */}
         <NavigationMenu>
           <NavigationMenuList>

@@ -3,6 +3,10 @@ import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import MenuIcon from "@mui/icons-material/Menu";
 import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import { ModeToggle } from "../ui/modeToggler";
+import CallIcon from '@mui/icons-material/Call';
+import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { Button } from "@/components/ui/button"
 
 type Props = {};
 
@@ -13,9 +17,25 @@ export const Drawer = (props: Props) => {
         <SheetTrigger>
           <MenuIcon color="primary" fontSize="large" />
         </SheetTrigger>
-        <SheetContent side="left">Hello, this is your sidebar</SheetContent>
+        <SheetContent side="left">
+          <div className="w-full h-full ">
+            <div className="topIconBar flex justify-between">
+
+              <ModeToggle />
+
+              <Button variant="outline" size="icon">
+                <CallIcon />
+              </Button>
+
+              <Button variant="outline" size="icon">
+                <WhatsAppIcon />
+              </Button>
+            </div>
+
+          </div>
+        </SheetContent>
       </Sheet>
-    </div>
+    </div >
   );
 };
 

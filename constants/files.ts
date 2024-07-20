@@ -16,3 +16,23 @@ export const heroSlider = {
         }
     ],
 };
+
+
+export const Categories: Category[] = [
+        {
+            name: 'category 1' ,
+            description: '',
+            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Harvesting.jpg',
+        },
+        {
+            name: 'category 2' ,
+            description: '',
+            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Land_preparation.jpg',
+        },
+        {
+            name: 'category 3' ,
+            description: '',
+            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Professional_Gardening.jpg',
+        },
+
+    ]

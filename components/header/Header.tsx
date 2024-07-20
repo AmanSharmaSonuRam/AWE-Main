@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AccountsDrawer, Drawer } from "./MobileHeader";
+import { ModeToggle } from "../ui/modeToggler";
 
 type Props = {};
 
@@ -131,6 +132,8 @@ const Header = (props: Props) => {
             </DropdownMenuContent>
           </DropdownMenu>
 
+          <ModeToggle />
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost">
@@ -194,7 +197,7 @@ const Header = (props: Props) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-
+          
         </div>
 
       </div>

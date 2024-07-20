@@ -34,17 +34,17 @@ export function HeroCarousal() {
             >
                 {/* Choose image based on screen size */}
                 <img
-          src={slide.imgUrlDesktop || slide.imgUrlMobile} // Use desktop image as default
-          alt={slide.title}
-          className="md:hidden block w-full h-full object-cover" // Mobile image
-        />
-        <img
-          src={slide.imgUrlDesktop} // Desktop image
-          alt={slide.title}
-          className="hidden md:block w-full h-full object-cover" // Desktop image
-        />
+                    src={slide.imgUrlDesktop || slide.imgUrlMobile} // Use desktop image as default
+                    alt={slide.title}
+                    className="md:hidden block w-full h-full object-cover" // Mobile image
+                />
+                <img
+                    src={slide.imgUrlDesktop} // Desktop image
+                    alt={slide.title}
+                    className="hidden md:block w-full h-full object-cover" // Desktop image
+                />
 
-                <CardContent className="flex flex-col items-center justify-between p-6 absolute top-0 w-full h-full  z-10">
+                <CardContent className="flex flex-col items-center justify-center gap-5 md:gap-20 p-6 absolute top-0 w-full h-full  z-10">
 
                     <h2 className="text-bold text-3xl">{slide.title}</h2>
 
@@ -57,7 +57,7 @@ export function HeroCarousal() {
         </CarouselItem>
     );
 
- 
+
     return (
         <Carousel
             className="w-full relative"

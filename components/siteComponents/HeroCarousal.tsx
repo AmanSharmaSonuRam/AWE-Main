@@ -34,10 +34,15 @@ export function HeroCarousal() {
             >
                 {/* Choose image based on screen size */}
                 <img
-                    src={useMediaQuery('(max-width: 768px)') ? slide.imgUrlMobile || slide.imgUrlDesktop : slide.imgUrlDesktop}
-                    alt={slide.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+          src={slide.imgUrlDesktop || slide.imgUrlMobile} // Use desktop image as default
+          alt={slide.title}
+          className="md:hidden block w-full h-full object-cover" // Mobile image
+        />
+        <img
+          src={slide.imgUrlDesktop} // Desktop image
+          alt={slide.title}
+          className="hidden md:block w-full h-full object-cover" // Desktop image
+        />
 
                 <CardContent className="flex flex-col items-center justify-between p-6 absolute top-0 w-full h-full  z-10">
 
@@ -52,21 +57,9 @@ export function HeroCarousal() {
         </CarouselItem>
     );
 
-    // Media query hook (replace with your implementation)
-    const useMediaQuery = (query: string) => {
-        const [matches, setMatches] = React.useState(window.matchMedia(query).matches);
-        React.useEffect(() => {
-            const media = window.matchMedia(query);
-            const handleChange = () => setMatches(media.matches);
-            media.addEventListener('change', handleChange);
-            return () => media.removeEventListener('change', handleChange);
-        }, [query]);
-        return matches;
-    };
-
+ 
     return (
         <Carousel
-            plugins={[plugin.current]}
             className="w-full relative"
             onMouseEnter={plugin.current.stop}
             onMouseLeave={plugin.current.reset}

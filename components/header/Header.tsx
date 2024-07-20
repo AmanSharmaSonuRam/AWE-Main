@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -29,16 +28,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import MenuIcon from "@mui/icons-material/Menu";
-import LocalMallOutlinedIcon from "@mui/icons-material/LocalMallOutlined";
 import { AccountsDrawer, Drawer } from "./MobileHeader";
 
 type Props = {};

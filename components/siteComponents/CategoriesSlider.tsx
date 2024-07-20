@@ -10,6 +10,11 @@ import {
 } from "@/components/ui/carousel"
 import { Categories } from "@/constants/files"
 
+interface Category {
+    name: string;
+    description: string;
+    imgUrl: string;
+}
 
 export function CategoriesSlider() {
     return (
@@ -22,12 +27,24 @@ export function CategoriesSlider() {
                 className="w-full px-3 md:px-10 relative"
             >
                 <CarouselContent>
-                    {Categories.map((category) => (
+                    {/* {Categories.map((category) => (
                         <CarouselItem key={category.name} className="md:basis-1/6 basis-1/3">
                             <div className="p-1">
                                 <Card>
                                     <CardContent className="flex aspect-square items-center justify-center p-2">
-                                        <img src={category.imageUrl} alt={category.name} width={45} height={45} />
+                                        <img src={category.imgUrl} alt={category.name} width={45} height={45} />
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </CarouselItem>
+                    ))} */}
+
+                    {Array.from({ length: 12 }).map((_, index) => (
+                        <CarouselItem key={index} className="md:basis-1/6 basis-1/3">
+                            <div className="p-1">
+                                <Card>
+                                    <CardContent className="flex aspect-square items-center justify-center p-6">
+                                        <span className="text-3xl font-semibold">{index + 1}</span>
                                     </CardContent>
                                 </Card>
                             </div>

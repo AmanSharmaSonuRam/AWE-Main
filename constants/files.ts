@@ -1,3 +1,5 @@
+import { Interface } from "readline";
+
 export const heroSlider = {
     Slides: [
         {
@@ -17,6 +19,11 @@ export const heroSlider = {
     ],
 };
 
+interface Category {
+    name: String,
+    description?: String,
+    imgUrl?: String,
+}
 
 export const Categories: Category[] = [
         {

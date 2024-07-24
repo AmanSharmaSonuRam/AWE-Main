@@ -1,9 +1,9 @@
-import { Interface } from "readline";
+import { title } from "process";
 
 export const heroSlider = {
     Slides: [
         {
-            imgUrlDesktop: "https://cdn.prod.website-files.com/605826c62e8de87de744596e/63f5e30a4d577354fdfce512_Duotone-Master-ssssFile-copy.jpg", 
+            imgUrlDesktop: "https://cdn.prod.website-files.com/605826c62e8de87de744596e/63f5e30a4d577354fdfce512_Duotone-Master-ssssFile-copy.jpg",
             imgUrlMobile: '',
             title: 'Slide 1',
             description: 'Description 1',
@@ -26,20 +26,49 @@ interface Category {
 }
 
 export const Categories: Category[] = [
-        {
-            name: 'category 1' ,
-            description: '',
-            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Harvesting.jpg',
-        },
-        {
-            name: 'category 2' ,
-            description: '',
-            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Land_preparation.jpg',
-        },
-        {
-            name: 'category 3' ,
-            description: '',
-            imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Professional_Gardening.jpg',
-        },
+    {
+        name: 'category 1',
+        description: '',
+        imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Harvesting.jpg',
+    },
+    {
+        name: 'category 2',
+        description: '',
+        imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Land_preparation.jpg',
+    },
+    {
+        name: 'category 3',
+        description: '',
+        imgUrl: 'https://pre-live-admin.balwaan.com/uploads/media/2023/thumb-md/Professional_Gardening.jpg',
+    },
 
-    ]
+]
+
+
+
+export const products = [
+    {
+        title: '',
+        price: '',
+        imgurl: '',
+        mrp: ''
+    },
+    {
+        title: '',
+        price: '',
+        imgurl: '',
+        mrp: ''
+    },
+    {
+        title: '',
+        price: '',
+        imgurl: '',
+        mrp: ''
+    },
+    {
+        title: '',
+        price: '',
+        imgurl: '',
+        mrp: ''
+    },
+]

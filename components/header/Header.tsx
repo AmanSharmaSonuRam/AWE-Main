@@ -30,12 +30,13 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AccountsDrawer, Drawer } from "./MobileHeader";
 import { ModeToggle } from "../ui/modeToggler";
+import { SearchIcon } from "lucide-react";
 
 type Props = {};
 
 const Header = (props: Props) => {
   return (
-    <div className="w-full justify-center items-center p3 sticky shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] ">
+    <div className="sticky w-full justify-center items-center p3 sticky shadow-[rgba(17,_17,_26,_0.1)_0px_0px_16px] ">
 
 
       {/* announcement BAr  */}
@@ -68,8 +69,8 @@ const Header = (props: Props) => {
         {/* search-Bar  */}
 
         <div className="flex w-full max-w-lg items-center space-x-2">
-          <Input type="search" placeholder="Seearch..." />
-          <Button type="submit">Search</Button>
+          <Input type="search" placeholder="Search..." />
+          <Button type="submit"><SearchIcon/></Button>
         </div>
 
         {/* Accounts-section  */}

@@ -1,16 +1,17 @@
 import React from 'react'
 import { ProductCard01 } from './ProductCard01'
 import { products } from '@/constants/files';
+import { Product } from '@/typing';
 
 
-interface Products {
-    title?: String,
-    price?: Number,
-    imgurl?: String,
-    mrp?: Number,
+
+
+type Products = {
+    products: Product[]
+
 }
 
-const ProductCarousal01 = ({ title, price, imgurl, mrp }: Products) => {
+const ProductCarousal01 = () => {
     return (
         <div>
             <h3 className='font-bold text-lg p-3'>
@@ -19,20 +20,17 @@ const ProductCarousal01 = ({ title, price, imgurl, mrp }: Products) => {
             <div
                 className='md:p-3 grid grid-cols-2 md:grid-cols-3 lg:flex'
             >
-                {products.map((product, index) => (
-    <ProductCard01
-        key={index} // Using the index as a fallback key
-        title={product.title}
-        price={product.price}
-        mrp={product.mrp}
-    />
-))}
+                {products.map(item => (
 
                 <ProductCard01
-                    title={title}
-                    price={price}
-                    mrp={mrp}
+                key={item.title}
+                    title={item.title}
+                    price={item.price}
+                    mrp={item.mrp}
                 />
+                ))}
+
+
             </div>
 
         </div>

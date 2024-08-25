@@ -19,9 +19,9 @@
 
 ## Technologies Used
 - **Front-End**: Next.js, React, Tailwind CSS
-- **Back-End**: Node.js, Express, Prisma
-- **Database**: MySQL
-- **Authentication**: JWT, OAuth
+- **Back-End**: Node.js, NextJs, Prisma, GraphQl
+- **Database**: PostgreSql
+- **Authentication**: nextauth
 - **Deployment**: Docker, Kubernetes, AWS
 
 ## Installation

@@ -1,31 +1,146 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
-  name  String
-  username String @unique
-
-model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  price       Float
-  // Other fields...
+generator pothos {
+  provider = "prisma-pothos-types"
 }
 
-// Define other models for orders, leads, campaigns, etc.
+
+model Product {
+    id              Int              @id @default(autoincrement())
+    name            String
+    description     String
+    price           Float
+    imageUrl        String[]
+    stockQuantity   Int          @default(0)
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+    categoryId      Int?
+    category        Category?        @relation(fields: [categoryId], references: [id])
+    orderItems      OrderItem[]
+    variants        ProductVariant[]
+    collections     Collection[]     @relation("CollectionProducts")
+    tags            Tag[]            @relation("ProductTags")
+}
+
+model ProductVariant {
+  id            Int     @id @default(autoincrement())
+  sku           String  @unique
+  size          String
+  color         String
+  price         Float
+  stockQuantity Int @default(0)
+  productId     Int
+  product       Product @relation(fields: [productId], references: [id])
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  description String?
+  imageUrl    String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
+}
+
+model Collection {
+  id          Int           @id @default(autoincrement())
+  title       String
+  description String?
+  imageUrl    String?
+  type        CollectionType
+  rules       CollectionRule[]
+  products    Product[]    @relation("CollectionProducts")
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model CollectionRule {
+  id           Int      @id @default(autoincrement())
+  collectionId Int
+  key          String   // Example: "price", "category", etc.
+  value        String   // Example: "10", "Electronics", etc.
+  collection   Collection @relation(fields: [collectionId], references: [id])
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  status          OrderStatus @default(PENDING)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  customerId      Int?
+  shippingAddressId Int?
+  billingAddressId  Int?
+  total           Float?
+  customer        Customer?   @relation(fields: [customerId], references: [id])
+  shippingAddress Address?    @relation("OrderShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress  Address?    @relation("OrderBillingAddress", fields: [billingAddressId], references: [id])
+  orderItems      OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  productId Int
+  quantity  Int
+  price     Float
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Customer {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  phoneNumber String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  orders      Order[]
+  notes       String?
+  tags        Tag[]     @relation("CustomerTags")
+  address     Address?  @relation("CustomerAddress")
+}
+
+model Address {
+  id            Int      @id @default(autoincrement())
+  address       String?
+  landmark      String?
+  city          String?
+  state         String?
+  pincode       String?
+  phone         String?
+  company       String?
+  customer      Customer? @relation("CustomerAddress", fields: [customerId], references: [id])
+  customerId    Int?      @unique
+  ordersShipping Order[]  @relation("OrderShippingAddress")
+  ordersBilling  Order[]  @relation("OrderBillingAddress")
+}
+
+model Tag {
+  id        Int        @id @default(autoincrement())
+  name      String     @unique
+  products  Product[]  @relation("ProductTags")
+  customers Customer[] @relation("CustomerTags")
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+enum CollectionType {
+  MANUAL
+  AUTOMATED
+}

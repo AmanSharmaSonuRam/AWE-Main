@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss"
-
+import colors from "tailwindcss/colors"
 
 
 const {
@@ -26,6 +26,7 @@ const config = {
     },
     extend: {
       colors: {
+        ...colors,
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -147,7 +148,7 @@ const config = {
 
     }
   },
-  plugins: [require("tailwindcss-animate"), require("tailwindcss-animate"), addVariablesForColors],
+  plugins: [require("tailwindcss-animate"), addVariablesForColors, require('tailwind-scrollbar')],
 } satisfies Config
 
 export default config

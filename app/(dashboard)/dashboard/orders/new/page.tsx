@@ -17,66 +17,34 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { toast } from "@/components/ui/use-toast"
 import Link from "next/link"
 import { Search, Plus, X, Trash, Mail, Phone, MessageSquare } from "lucide-react"
+import { SEARCH_PRODUCTS } from '@/ApolloClient/productQueries'
+import { SEARCH_CUSTOMERS, CREATE_CUSTOMER } from '@/ApolloClient/customerQueries'
+import { CREATE_ORDER } from '@/ApolloClient/orderQueries'
+import { Product } from "@prisma/client"
+import { redirect, useRouter } from "next/navigation"
 
-// GraphQL Queries and Mutations
-const SEARCH_PRODUCTS = gql`
-  query SearchProducts($searchTerm: String!) {
-    searchProducts(searchTerm: $searchTerm) {
-      id
-      name
-      description
-      price
-    }
-  }
-`
-
-const SEARCH_CUSTOMERS = gql`
-  query SearchCustomers($searchTerm: String!) {
-    searchCustomers(searchTerm: $searchTerm) {
-      id
-      name
-      email
-      phone
-      address
-    }
-  }
-`
-
-const CREATE_CUSTOMER = gql`
-  mutation CreateCustomer($input: CreateCustomerInput!) {
-    createCustomer(input: $input) {
-      id
-      name
-      email
-      phone
-      address
-    }
-  }
-`
-
-const CREATE_ORDER = gql`
-  mutation CreateOrder($input: CreateOrderInput!) {
-    createOrder(input: $input) {
-      id
-      total
-    }
-  }
-`
-
-const GET_STORE_SETTINGS = gql`
-  query GetStoreSettings {
-    storeSettings {
-      taxIncludedInPrice
-    }
-  }
-`
+interface Customer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  address?: {
+    city: string;
+    state: string;
+    pincode: string;
+  };
+}
 
 export default function EnhancedOrdersPage() {
+  const router = useRouter();
   const [productSearchTerm, setProductSearchTerm] = useState("")
   const [customerSearchTerm, setCustomerSearchTerm] = useState("")
-  const [selectedCustomer, setSelectedCustomer] = useState(null)
-  const [orderItems, setOrderItems] = useState([])
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [orderItems, setOrderItems] = useState<Product[]>([])
   const [customItem, setCustomItem] = useState({ name: "", description: "", price: "", quantity: "" })
+  const [shippingAddress, setShippingAddress] = useState()
+  const [billingAddress, setBillingAddress] = useState()
   const [orderTags, setOrderTags] = useState([])
   const [orderNotes, setOrderNotes] = useState("")
   const [discount, setDiscount] = useState(0)
@@ -96,7 +64,9 @@ export default function EnhancedOrdersPage() {
     skip: !customerSearchTerm,
   })
 
-  const { data: storeSettingsData } = useQuery(GET_STORE_SETTINGS)
+  // const { data: storeSettingsData } = useQuery(GET_STORE_SETTINGS)
+  const { storeSettingsData } = true
+
 
   const [createCustomer] = useMutation(CREATE_CUSTOMER)
   const [createOrder] = useMutation(CREATE_ORDER)
@@ -109,34 +79,34 @@ export default function EnhancedOrdersPage() {
     }
   }, [customerSearchTerm, refetchCustomers])
 
-  const handleAddProduct = (product) => {
-    setOrderItems([...orderItems, { ...product, quantity: 1 }])
+  const handleAddProduct = (product: Product) => {
+    setOrderItems(prevItems => [...prevItems, { ...product, quantity: 1 }])
   }
 
   const handleAddCustomItem = () => {
     if (customItem.name && customItem.price && customItem.quantity) {
-      setOrderItems([...orderItems, { ...customItem, id: `custom-${Date.now()}` }])
+      setOrderItems(prevItems => [...prevItems, { ...customItem, id: `custom-${Date.now()}` } as Product])
       setCustomItem({ name: "", description: "", price: "", quantity: "" })
     }
   }
 
-  const handleRemoveItem = (itemId) => {
+  const handleRemoveItem = (itemId: any) => {
     setOrderItems(orderItems.filter(item => item.id !== itemId))
   }
 
-  const handleQuantityChange = (itemId, newQuantity) => {
-    setOrderItems(orderItems.map(item => 
+  const handleQuantityChange = (itemId: any, newQuantity: any) => {
+    setOrderItems(orderItems.map((item: any) =>
       item.id === itemId ? { ...item, quantity: parseInt(newQuantity) } : item
     ))
   }
 
-  const handleAddTag = (tag) => {
+  const handleAddTag = (tag: any) => {
     if (tag && !orderTags.includes(tag)) {
       setOrderTags([...orderTags, tag])
     }
   }
 
-  const handleRemoveTag = (tag) => {
+  const handleRemoveTag = (tag: any) => {
     setOrderTags(orderTags.filter(t => t !== tag))
   }
 
@@ -168,8 +138,8 @@ export default function EnhancedOrdersPage() {
     }
 
     const orderInput = {
-      customerId: selectedCustomer.id,
-      items: orderItems.map(item => ({ productId: item.id, quantity: item.quantity })),
+      customerId: parseInt(selectedCustomer.id),
+      orderItems: orderItems.map(item => ({ productId: item.id, quantity: item.quantity })),
       tags: orderTags,
       notes: orderNotes,
       discount,
@@ -177,19 +147,33 @@ export default function EnhancedOrdersPage() {
       otherFees,
       taxRate,
       collectPaymentLater,
+      shippingAddress: {
+        city: selectedCustomer?.address?.city,
+        state: selectedCustomer?.address?.state,
+        pincode: selectedCustomer?.address?.pincode
+      },
+      billingAddress: {
+        city: selectedCustomer?.address?.city,
+        state: selectedCustomer?.address?.state,
+        pincode: selectedCustomer?.address?.pincode
+      },
     }
 
     try {
-      const { data } = await createOrder({ variables: { input: orderInput } })
-      toast({
-        title: "Order Created",
-        description: `Order #${data.createOrder.id} has been created successfully.`,
-      })
-      // Reset form or redirect to order details page
+      const { data } = await createOrder({ variables: orderInput });
+      if (data && data.createOrder) {
+        toast({
+          title: "Order Created",
+          description: `Order ID ${data.createOrder.id} has been created successfully.`,
+        });
+        router.push('/dashboard/orders/recent-orders')
+      } else {
+        throw new Error("Unexpected response format");
+      }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to create the order.",
+        description: `Failed to create the order: ${error.message}`,
         variant: "destructive",
       })
     }
@@ -209,7 +193,7 @@ export default function EnhancedOrdersPage() {
     return subtotal - discount + shippingFees + otherFees + (taxIncludedInPrice ? 0 : tax)
   }
 
-  const sendInvoice = (method) => {
+  const sendInvoice = (method: any) => {
     // Implement the logic to send invoice via the specified method
     toast({
       title: "Invoice Sent",
@@ -217,17 +201,28 @@ export default function EnhancedOrdersPage() {
     })
   }
 
+
+  const handleCustomerSelect = (customer: any) => {
+    setSelectedCustomer(customer);
+    setCustomerSearchTerm(`${customer.firstName} ${customer.lastName}`);
+  };
+
+  const handleProductSelect = (product: any) => {
+    handleAddProduct(product);
+    setProductSearchTerm('');
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col gap-4 p-4 md:p-6">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} href="/">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink as={Link} href="/orders">Orders</BreadcrumbLink>
+              <BreadcrumbLink href="/dashboard/orders">Orders</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -243,37 +238,48 @@ export default function EnhancedOrdersPage() {
                 <CardTitle>Customer Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Search className="text-muted-foreground" />
-                  <Input
-                    placeholder="Search customers..."
-                    value={customerSearchTerm}
-                    onChange={(e) => setCustomerSearchTerm(e.target.value)}
-                  />
-                </div>
-                {customerLoading && <div>Loading customers...</div>}
-                {customerData?.searchCustomers && (
-                  <Select onValueChange={(value) => setSelectedCustomer(JSON.parse(value))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a customer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {customerData.searchCustomers.map((customer) => (
-                        <SelectItem key={customer.id} value={JSON.stringify(customer)}>
-                          {customer.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-                {selectedCustomer && (
-                  <div className="space-y-2">
-                    <div><strong>Name:</strong> {selectedCustomer.name}</div>
-                    <div><strong>Email:</strong> {selectedCustomer.email}</div>
-                    <div><strong>Phone:</strong> {selectedCustomer.phone}</div>
-                    <div><strong>Address:</strong> {selectedCustomer.address}</div>
+                <div className="relative">
+                  <div className="flex items-center space-x-2 relative">
+                    <Search className="text-muted-foreground absolute right-2" />
+                    <Input
+                      placeholder="Search customers..."
+                      value={customerSearchTerm}
+                      onChange={(e) => setCustomerSearchTerm(e.target.value)}
+                      className="relative"
+                    />
                   </div>
-                )}
+                  {customerLoading && <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg px-4 py-2" >
+                    Loading customers...</div>}
+                  {customerData?.searchCustomers && (
+                    <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                      {customerData.searchCustomers.edges.map(({ node }: any) => (
+                        <div
+                          key={node.id}
+                          onClick={() => handleCustomerSelect(node)}
+                          className="cursor-pointer px-4 py-2 hover:bg-gray-100 capitalize"
+                        >
+                          {node.firstName} {node.lastName}
+                          <span className="text-muted-foreground text-sm pl-3 lowercase">{node.email}</span>
+                        </div>
+
+                      ))}
+
+                    </div>
+                  )}
+                  {selectedCustomer && (
+                    <div className="mt-5 space-y-2 capitalize border rounded-lg p-5 border-gray-200">
+                      <div className="text-blue-500 hover:underline cursor-pointer hover:text-blue-600">{selectedCustomer?.firstName} {selectedCustomer?.lastName}</div>
+                      <div className="font-bold ">Contact information</div>
+                      <div className="text-blue-500 hover:underline cursor-pointer hover:text-blue-600 text-sm lowercase">{selectedCustomer?.email}</div>
+                      <div className="text-blue-500 hover:underline text-sm cursor-pointer hover:text-blue-600">{selectedCustomer?.phoneNumber}</div>
+                      {selectedCustomer.address ?
+                        (<div><strong>Address:</strong> {selectedCustomer.address?.city}, {selectedCustomer.address?.state} - {selectedCustomer?.address?.pincode}</div>) : (<div className="font-bold text-sm">No address found!</div>)
+                      }
+                    </div>
+                  )}
+                </div>
+                {/* {!selectedCustomer &&
+                 } */}
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="outline">Add New Customer</Button>
@@ -317,27 +323,39 @@ export default function EnhancedOrdersPage() {
               <CardHeader>
                 <CardTitle>Product Selection</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Search className="text-muted-foreground" />
+              <CardContent className="space-y-4 relative">
+                <div className="flex items-center space-x-2 relative">
+                  <Search className="text-muted-foreground absolute right-2" />
                   <Input
                     placeholder="Search products..."
                     value={productSearchTerm}
                     onChange={(e) => setProductSearchTerm(e.target.value)}
                   />
                 </div>
-                {productLoading && <div>Loading products...</div>}
+                {productLoading && <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg px-4 py-2" >
+                  Loading products...</div>}
                 {productData?.searchProducts && (
-                  <div className="space-y-2">
-                    {productData.searchProducts.map((product) => (
-                      <div key={product.id} className="flex items-center justify-between p-2 bg-muted rounded-md">
-                        <div>
-                          <div className="font-medium">{product.name}</div>
-                          <div className="text-sm text-muted-foreground">${product.price}</div>
-                        </div>
-                        <Button onClick={() => handleAddProduct(product)}>Add</Button>
+                  <div className="space-y-2 relative">
+                    {productData?.searchProducts && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg">
+                        {productData.searchProducts.edges.map(({ node }: any) => (
+
+                          <div
+                            key={node.id}
+                            onClick={() => handleProductSelect(node)}
+                            className="flex items-center gap-2 cursor-pointer px-4 py-2 hover:bg-gray-100"
+                          >
+                            <img src={node.imageUrl[0] ?? '/placeholder.svg'} alt={node.name} className="rounded-md w-16 mr-3" />
+                            <div className="font-medium text-lg capitalize">{node.name}</div>
+                            <div className="text-xs text-muted-foreground">${node.price}</div>
+                          </div>
+
+                        ))}
+
                       </div>
-                    ))}
+                    )}
+
+
                   </div>
                 )}
                 <div className="space-y-2">
@@ -424,9 +442,14 @@ export default function EnhancedOrdersPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {orderItems.map((item) => (
+                    {orderItems.map((item: any) => (
                       <TableRow key={item.id}>
-                        <TableCell>{item.name}</TableCell>
+                        <TableCell className="md:flex items-center capitalize gap-3">
+                          {item.imageUrl &&
+                            <img src={item.imageUrl[0] ?? '/placeholder.svg'} alt={item.name} className="rounded-md w-16" />
+                          }
+                          {item.name}
+                        </TableCell>
                         <TableCell>
                           <Input
                             type="number"
@@ -511,7 +534,7 @@ export default function EnhancedOrdersPage() {
                   <Checkbox
                     id="collect-payment-later"
                     checked={collectPaymentLater}
-                    onCheckedChange={setCollectPaymentLater}
+                    onCheckedChange={(checked: boolean) => setCollectPaymentLater(checked)}
                   />
                   <Label htmlFor="collect-payment-later">Collect payment later</Label>
                 </div>
